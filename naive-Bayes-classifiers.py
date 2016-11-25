@@ -1,4 +1,3 @@
-badWM = 0
 # -*- coding: utf-8 -*-
 """
 Created on Tue Nov 15 20:27:27 2016
