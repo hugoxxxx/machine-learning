@@ -1,3 +1,4 @@
+badWM = 0
 # -*- coding: utf-8 -*-
 """
 Created on Tue Nov 15 20:27:27 2016
@@ -63,4 +64,4 @@ std_badWM = D[8:,6:8].std(axis = 0, ddof = 1).reshape(1,2)
 x_badWM_con = 1/(sqrt(2*pi)*std_badWM)*exp(-(test[0,6:8]-mean_badWM)**2/(2*std_badWM**2))
 x_badWM = P_badWM * prod(x_badWM_sep)* prod(x_badWM_con)
 
-print('好瓜的概率 = %s/n坏瓜的概率 = %s' %(x_goodWM, x_badWM))
+print('好瓜的概率 = %s\n坏瓜的概率 = %s' %(x_goodWM, x_badWM))
