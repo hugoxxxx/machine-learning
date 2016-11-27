@@ -6,7 +6,6 @@ Created on Fri Nov 25 11:58:38 2016
 """
 
 import numpy as np
-import infoEntropy as ient
 import pandas
 
 df = pandas.read_excel('watermelon_3a.xlsx')
@@ -25,28 +24,56 @@ def error(ar, status, D):
     return er
 
 
-# 定义基学习器
-def dec_stump(ar1, ar2, status, D):
-    n = status.size
-    result = -np.ones(n)
-    ar1_gain, ar1_T = ient.Gain_and_T(ar1, status, n)
-    ar2_gain, ar2_T = ient.Gain_and_T(ar2, status, n)
-    if ar1_gain > ar2_gain:
-        ar, T = ar1, ar1_T
+# 定义分类器
+def classifier(x, t):
+    if x > t:
+        return 1
     else:
-        ar, T = ar2, ar2_T
-    for i in range(n):
-        if ar[i] > T:
-            result[i] = 1
-    et = error(result, status, D)
-    print(ar1_T, ar2_T, result, et)
-    return result
+        return -1
+
+
+# 定义基学习器(决策树桩)
+# 1. 连续属性划分点（基于最小错误率）
+def atrSplit(ar, status, D):
+    n = status.size
+    ar_sorted = np.sort(ar, axis=0)
+    t, et = 0, 1
+    for i in range(n-1):
+        result = -np.ones(n)
+        t1 = 0.5 * (ar_sorted[i] + ar_sorted[i+1])
+        for j in range(n):
+            if ar[j] > t1:
+                result[j] = 1
+        er = error(result, status, D)
+        if et > er:
+            et = er
+            t = t1
+    return t, et
+
+
+# 2. 定义决策树桩
+def dec_stump(ar1, ar2, status, D):
+    t1, et1 = atrSplit(ar1, status, D)
+    t2, et2 = atrSplit(ar2, status, D)
+    if et1 <= et2:
+        t_out = t1
+        et_out = et1
+    else:
+        t_out = t2
+        et_out = et2
+    return t_out, et_out
 
 
 # AdaBoost算法
-#def adaBoost():
-#    D = 1/m
-    
-D = np.repeat(1/10, 17)            
-   
-dec_stump(density, sugar_ratio, WM_status, D)
+def adaBoost(ar1, ar2, status, T):
+    m = WM_status.size
+    D = np.repeat(1/m, m)
+    at_out = np.arange(T, dtype=float)
+    for i in range(T):
+        t, et = dec_stump(ar1, ar2, status, D)
+        at = 0.5 * np.log((1 - et) / et)
+        at_out[i] = at
+        print(at, at_out)
+    return at
+       
+print(adaBoost(density, sugar_ratio, WM_status, 3))
