@@ -8,17 +8,19 @@ Created on Fri Nov 25 11:58:38 2016
 import numpy as np
 
 
-#信息熵函数
+# 信息熵函数
 def Ent(p1, p2, y):
     if p1 == 0 and p2 != 0:
         return - p2/y * np.log2(p2/y)
-    elif p2 == 0:
+    elif p1 != 0 and p2 == 0:
+        return - p1/y * np.log2(p1/y)
+    elif p1 == 0 and p2 == 0:
         return 0
     else:
         return - (p1/y * np.log2(p1/y) + p2/y * np.log2(p2/y))
 
 
-#信息增益函数
+# 信息增益函数
 def gain_t(Dt1, Dt2, Dt1_T, Dt1_F, Dt2_T, Dt2_F):
     Ent_Dt1 = Ent(Dt1_T, Dt1_F, Dt1)
     Ent_Dt2 = Ent(Dt2_T, Dt2_F, Dt2)
@@ -27,7 +29,7 @@ def gain_t(Dt1, Dt2, Dt1_T, Dt1_F, Dt2_T, Dt2_F):
     return Ent_D - (Dt1/D*Ent_Dt1 + Dt2/D*Ent_Dt2)
 
 
-#连续属性求划分点及信息增益
+# 连续属性求划分点及信息增益
 def Gain_and_T(ar_d, ar_k, n):
     Gain, T = 0, 0
     for i in range(n-1):
