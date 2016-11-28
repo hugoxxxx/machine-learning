@@ -91,10 +91,10 @@ def classicfier(at, t, atr, ar1, ar2):
     return result
 
 
-for T in range(10):
-    at, t, atr = adaBoost(density, sugar_ratio, WM_status, 1)
-    result = classicfier(at, t, atr, density, sugar_ratio)
-    frame = pd.DataFrame(result, columns = [T])
+at, t, atr = adaBoost(density, sugar_ratio, WM_status, 1)
+result = classicfier(at, t, atr, density, sugar_ratio)
+
+frame = pd.DataFrame(result, columns = ['1'])
 
 
 
