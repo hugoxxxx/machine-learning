@@ -30,8 +30,9 @@ def gain_t(Dt1, Dt2, Dt1_T, Dt1_F, Dt2_T, Dt2_F):
 
 
 # 连续属性求划分点及信息增益
-def Gain_and_T(ar_d, ar_k, n):
-    Gain, T = 0, 0
+def Gain_and_T(ar_d, ar_k, D):
+    n = ar_k.size
+    Gain, T, er = 0, 0, 0
     for i in range(n-1):
         ar_sorted = np.sort(ar_d, axis=0)
         t = (ar_sorted[i] + ar_sorted[i + 1])/2
@@ -39,18 +40,22 @@ def Gain_and_T(ar_d, ar_k, n):
         for j in range(n):
             if ar_d[j] > t:
                 if ar_k[j] == 1:
-                    Dt1_T += 1
+                    Dt1_T += D[j]
                 else:
-                    Dt1_F += 1
+                    Dt1_F += D[j]
             else:
                 if ar_k[j] == 1:
-                    Dt2_T += 1
+                    Dt2_T += D[j]
                 else:
-                    Dt2_F += 1
+                    Dt2_F += D[j]
         Dt1 = Dt1_T + Dt1_F
         Dt2 = Dt2_T + Dt2_F
         Gain_t = gain_t(Dt1, Dt2, Dt1_T, Dt1_F, Dt2_T, Dt2_F)
         if Gain_t > Gain:
             Gain = Gain_t
             T = t
-    return Gain, T
+    result = np.sign(ar_d - T)
+    for o in range(n):
+        if result[o] != ar_k[o]:
+            er += D[o]
+    return T, er, result
