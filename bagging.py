@@ -10,7 +10,7 @@ import pandas as pd
 import infoEntropy as en
 import random
 
-df = pd.read_excel('watermelon_3a.xlsx')
+df = pd.read_excel('watermelon_4a.xlsx')
 density = np.array(df[['密度']].values[:, :])
 sugar_ratio = np.array(df[['含糖率']].values[:, :])
 WM_status = np.array(df[['好瓜']].values[:, :])
@@ -57,6 +57,6 @@ def bagging(array1, array2, status, T):
     return result
 
 result = WM_status
-for T in range(17):
+for T in range(m):
     result_T = bagging(density, sugar_ratio, WM_status, T+1)
     result = np.hstack((result, result_T))
