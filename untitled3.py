@@ -25,7 +25,7 @@ def error(ar, status, D):
 
 
 # 定义基学习器(决策树桩)
-# 连续属性划分点（基于最小错误率）
+# 1. 连续属性划分点（基于最小错误率）
 def atrSplit(ar, status, D):
     n = status.size
     ar_sorted = np.sort(ar, axis=0)
@@ -41,39 +41,61 @@ def atrSplit(ar, status, D):
     return t, et, result
 
 
+# 2. 定义决策树桩
+def dec_stump(ar1, ar2, status, D):
+    t1, et1, result1 = atrSplit(ar1, status, D)
+    t2, et2, result2 = atrSplit(ar2, status, D)
+    if et1 <= et2:
+        t = t1
+        et = et1
+        result = result1
+        atr = "density"
+    else:
+        t = t2
+        et = et2
+        result = result2
+        atr = "sugar_ratio"
+    return t, et, result, atr
+
 
 # AdaBoost算法
-def adaBoost(ar, status, T):
-    table = status
-    m = status.size
+def adaBoost(ar1, ar2, status, T):
+    m = WM_status.size
     D = np.repeat(1/m, m).reshape(m, 1)
     at_out = np.arange(T, dtype=float)
     t_out = np.arange(T, dtype=float)
+    atr_out = []
     for i in range(T):
-        t, et, result = atrSplit(ar, status, D)
+        t, et, result, atr = dec_stump(ar1, ar2, status, D)
         at = 0.5 * np.log((1 - et) / et)
         at_out[i] = at
         t_out[i] = t
+        atr_out.append(atr)
         z = D * np.exp(-at * status * result)
         D = D / np.sum(z) * np.exp(-at * status * result)
-        table = np.hstack((table, result))
-        print(t)
-    print(table)
-    return at_out, t_out, table
+    return at_out, t_out, atr_out
 
-adaBoost(sugar_ratio, WM_status, 3)
+
 # 集合分类器
-def classicfier(at, t, ar):
+def classicfier(at, t, atr, ar1, ar2):
     m = at.size
-    n = ar.size
+    n = ar1.size
     result = np.zeros(n).reshape(n, 1)
     for i in range(m):
-        result_tmp = np.sign(ar - t[i])
+        if atr[i] == "density":
+            result_tmp = np.sign(density - t[i])
+        else:
+            result_tmp = np.sign(sugar_ratio - t[i])
         result += at[i] * result_tmp
     result = np.sign(result)
     return result
 
-for T in range(10):
-    at,t, table = adaBoost(sugar_ratio, WM_status, T+1)
-    result = classicfier(at, t, sugar_ratio)
-#    table = np.hstack((table, result))
+
+at, t, atr = adaBoost(density, sugar_ratio, WM_status, 1)
+result = classicfier(at, t, atr, density, sugar_ratio)
+
+frame = pd.DataFrame(result, columns = ['1'])
+
+
+
+
