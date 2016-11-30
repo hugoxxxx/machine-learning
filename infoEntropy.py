@@ -37,7 +37,7 @@ def Gain_and_T(ar_d, ar_k, n):
         t = (ar_sorted[i] + ar_sorted[i + 1])/2
         Dt1, Dt2, Dt1_T, Dt1_F, Dt2_T, Dt2_F = 0, 0, 0, 0, 0, 0
         for j in range(n):
-            if ar_d[j] > t:
+            if ar_d[j] >= t:
                 if ar_k[j] == 1:
                     Dt1_T += 1
                 else:
